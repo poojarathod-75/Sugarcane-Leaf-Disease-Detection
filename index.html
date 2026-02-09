@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sugarcane Leaf Disease Detection</title>
+    <style>
+        body {
+            /* background: linear-gradient(135deg, #2ecc71, #7600a9); */
+            background-image: url(../static/89ea5cca8e222409eaf41d8376040cbb.jpg);
+            background-size: cover;
+            font-family: Arial;
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+        .card {
+            background: white;
+            color: #333;
+            width: 450px;
+            margin: auto;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.2);
+        }
+        .upload-btn {
+            background: #27ae60;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+        .upload-btn:hover { background: #1e8449; }
+        img { margin-top: 20px; max-width: 100%; border-radius: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Sugarcane Leaf Disease Detection</h1>
+    <div class="card">
+        <h2>Upload Your Image</h2>
+        <input type="file" id="inputImage">
+        <br>
+        <button class="upload-btn" onclick="predict()">Predict</button>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function predict() {
+            let file = document.getElementById("inputImage").files[0];
+            if (!file) {
+                alert("Please select an image");
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append("image", file);
+
+            fetch("/predict", { method: "POST", body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    alert("Error: " + data.error);
+                    return;
+                }
+                document.getElementById("output").innerHTML =
+                    `<h3>Predicted Output:</h3>
+                     <img src="${data.output_image}?${new Date().getTime()}" />`;
+            })
+            .catch(err => {
+                alert("Server error: " + err);
+                console.error(err);
+            });
+        }
+    </script>
+</body>
+</html>
